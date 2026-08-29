@@ -1,7 +1,7 @@
 # radar.py 的自動化測試。用 uv run pytest 執行。這週多了第四個：驗記憶。
 
-# 從 radar.py 載入這次要測試的三個函式。
-from radar import build_message, make_feed_url, pick_new
+# 從 radar.py 載入這次要測試的函式與常數。
+from radar import build_message, make_feed_url, pick_new, MAX_ITEMS
 
 
 # 驗網址：中文關鍵字有沒有被正確編碼進網址。
@@ -23,15 +23,15 @@ def test_訊息包含關鍵字與標題():
     assert "2 則" in message
 
 
-# 驗上限：給十條新聞，訊息裡應該只出現五條。
-def test_訊息最多只列五則():
+# 驗上限：給十條新聞，訊息裡應該只出現限制條數。
+def test_訊息最多只列限制條數():
     items = [
         {"title": "新聞" + str(n), "link": "https://example.com/" + str(n)}
         for n in range(1, 11)
     ]
     message = build_message("測試主題", items)
-    assert "5 則" in message
-    assert "新聞6" not in message
+    assert f"{MAX_ITEMS} 則" in message
+    assert f"新聞{MAX_ITEMS + 1}" not in message
 
 
 # 驗記憶：看過的新聞不應該再出現在挑選結果裡。
